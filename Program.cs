@@ -12,8 +12,6 @@ namespace Labb1_ASP.NET_API
 
             // Add services to the container.
             builder.Configuration.AddEnvironmentVariables();
-
-            // Lägg till DbContext-tjänsterna
             builder.Services.AddDbContext<RestaurantDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
