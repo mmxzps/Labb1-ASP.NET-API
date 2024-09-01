@@ -12,10 +12,9 @@ namespace Labb1_ASP.NET_API.Models
         public int AmountGuest { get; set; }
 
         [Required]
-        public DateOnly BookingDate { get; set; }
-
+        public DateTime BookingTime { get; set; }
         [Required]
-        public TimeOnly BookingTime { get; set; }
+        public DateTime BookingTimeEnd { get; set; }
 
         [Required]
         [ForeignKey("Customer")]
