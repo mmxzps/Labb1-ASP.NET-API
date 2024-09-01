@@ -5,7 +5,8 @@ This API manages reservations for a restaurant. It allows customers to book tabl
 # EndPoints:
 
 ## Bookings
-### <center>⏺️Show all bookings:<br>
+### <center>⏺️Show all bookings:</center>
+<br>
 * Method:   GET
 * URL: ```/api/bookings/ShowAllBookings ```<br><br>
 
