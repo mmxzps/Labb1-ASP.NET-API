@@ -2,10 +2,10 @@
 {
     public class EditMenuDTO
     {
-        public string? FoodName { get; set; }
+        public string FoodName { get; set; }
 
-        public double? Price { get; set; }
+        public double Price { get; set; }
 
-        public bool? IsAvailable { get; set; }
+        public bool IsAvailable { get; set; }
     }
 }

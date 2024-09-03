@@ -1,5 +1,5 @@
 ﻿using Labb1_ASP.NET_API.Models;
-using Labb1_ASP.NET_API.Models.DTOs;
+using Labb1_ASP.NET_API.Models.DTOs.Table;
 
 namespace Labb1_ASP.NET_API.Services.IServices
 {

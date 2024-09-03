@@ -1,6 +1,6 @@
 
 using Labb1_ASP.NET_API.Data;
-using Labb1_ASP.NET_API.Models.DTOs;
+using Labb1_ASP.NET_API.Models.DTOs.Booking;
 using Labb1_ASP.NET_API.Repositories;
 using Labb1_ASP.NET_API.Repositories.IRepositories;
 using Labb1_ASP.NET_API.Services;

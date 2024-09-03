@@ -19,35 +19,75 @@ namespace Labb1_ASP.NET_API.Controllers
         public async Task<ActionResult<IEnumerable<ShowMenuDTO>>> GetAllMenuItems()
         {
             var menuList = await _menuService.GetAllMenusAsync();
+            if(menuList == null || !menuList.Any())
+            {
+                return NotFound(new { Error = "No menu items found!" });
+            }
             return Ok(menuList);
         }
 
-        [HttpGet("GetAllMenuItemById/{menuId}")]
-        public async Task<ActionResult<ShowMenuDTO>> GetAllMenuItemById(int menuId)
+
+        [HttpGet("GetMenuItemById/{menuId}")]
+        public async Task<ActionResult<ShowMenuDTO>> GetMenuItemById(int menuId)
         {
-            var menu = await _menuService.GetMenuByIdAsync(menuId);
-            return Ok(menu);
+            try
+            {
+                var menu = await _menuService.GetMenuByIdAsync(menuId);
+                return Ok(menu);
+            }
+            catch (KeyNotFoundException ex) 
+            {
+                return NotFound($"{ex.Message}");
+            }
         }
+
 
         [HttpPost("AddMenuItem")]
         public async Task<IActionResult> AddMenuItem(CreateMenuDTO menuDto)
         {
-            await _menuService.AddMenuAsync(menuDto);
-            return Ok();
+            try
+            {
+                await _menuService.AddMenuAsync(menuDto);
+                return Ok();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(ex.Message);
+            }
         }
+
 
         [HttpPut("EditMenuItem/{menuId}")]
         public async Task<IActionResult> EditMenuItem(EditMenuDTO menudto, int menuId)
         {
-            await _menuService.EditMenuAsync(menudto, menuId);
-            return Ok();
+            try
+            {
+                await _menuService.EditMenuAsync(menudto, menuId);
+                return Ok();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound($"{ex.Message}");
+            }
+            catch(InvalidDataException ex)
+            {
+                return BadRequest($"{ex.Message}");
+            }
         }
+
 
         [HttpDelete("DeleteMenuItem/{menuId}")]
         public async Task<IActionResult> DeleteMenuItem(int menuId)
         {
-            await _menuService.DeleteMenuAsync(menuId);
-            return Ok();
+            try
+            {
+                await _menuService.DeleteMenuAsync(menuId);
+                return Ok();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound($"{ex.Message}");
+            }
         }
     }
 }

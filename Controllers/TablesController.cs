@@ -1,5 +1,5 @@
 ﻿using Labb1_ASP.NET_API.Models;
-using Labb1_ASP.NET_API.Models.DTOs;
+using Labb1_ASP.NET_API.Models.DTOs.Table;
 using Labb1_ASP.NET_API.Services.IServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,16 +27,21 @@ namespace Labb1_ASP.NET_API.Controllers
             return Ok(allTable);
         }
 
+
         [HttpGet("GetTableById/{tableId}")]
         public async Task<ActionResult<Table>> GetTableById(int tableId)
         {
-            var theTable = await _tableService.GetTableByIdAsync(tableId);
-            if ((theTable == null))
+            try
             {
-                return NotFound(new { Error = $"No table with id.{tableId} found!" });
+                var theTable = await _tableService.GetTableByIdAsync(tableId);
+                return Ok(theTable);
             }
-            return Ok(theTable);
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound($"{ex.Message}");
+            }
         }
+
 
         [HttpPost("AddTable")]
         public async Task<IActionResult> AddTable(EditTableDTO tableDto)
@@ -45,18 +50,34 @@ namespace Labb1_ASP.NET_API.Controllers
             return Created();
         }
 
+
         [HttpPut("EditTable/{tableId}")]
         public async Task<IActionResult> EditTable(EditTableDTO tableDTO, int tableId)
         {
-            await _tableService.EditTableAsync(tableDTO, tableId);
-            return Ok();
+            try
+            {
+                await _tableService.EditTableAsync(tableDTO, tableId);
+                return Ok();
+            }
+            catch(InvalidOperationException ex)
+            {
+                return Conflict(ex.Message);
+            }
         }
+
 
         [HttpDelete("DeleteTable/{tableId}")]
         public async Task<IActionResult> DeleteTable(int tableId)
         {
-            await _tableService.DeleteTableAsync(tableId);
-            return Ok();
+            try
+            {
+                await _tableService.DeleteTableAsync(tableId);
+                return Ok();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound($"{ex.Message}");
+            }
         }
     }
 }

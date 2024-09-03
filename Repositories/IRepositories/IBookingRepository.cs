@@ -10,6 +10,7 @@ namespace Labb1_ASP.NET_API.Repositories.IRepositories
         Task AddBookingAsync(Booking booking);
         Task EditBookingAsync(Booking booking);
         Task DeleteBookingAsync(int id);
-        Task<bool> IsTableAvailableAsync(int tableId, DateTime bookingTime, DateTime bookingTimeEnd);
+        Task<bool> IsTableBusyAsync(int tableId, DateTime bookingTime, DateTime bookingTimeEnd, int? bookingIdToIgnore);
+        Task<bool> IsTableBusyAsync(int tableId, DateTime startTime, DateTime endTime);
     }
 }

@@ -1,7 +1,8 @@
-﻿using Labb1_ASP.NET_API.Models.DTOs;
+﻿using Labb1_ASP.NET_API.Models.DTOs.Booking;
 using Labb1_ASP.NET_API.Services.IServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace Labb1_ASP.NET_API.Controllers
 {
@@ -26,6 +27,7 @@ namespace Labb1_ASP.NET_API.Controllers
             return Ok(allBookings);
         }
 
+
         [HttpGet("GetBookingById/{bookingId}")]
         public async Task<ActionResult<ShowBookingDTO>> GetBookingById(int bookingId)
         {
@@ -36,6 +38,7 @@ namespace Labb1_ASP.NET_API.Controllers
             }
             return Ok(theBooking);
         }
+
 
         [HttpPost("AddBooking")]
         public async Task<IActionResult> AddBooking(CreateBookingDTO bookingDTO)
@@ -49,20 +52,54 @@ namespace Labb1_ASP.NET_API.Controllers
             {
                 return Conflict(new { Error = ex.Message });
             }
+            catch (JsonException ex)
+            {
+                return Conflict(ex.Message);
+            }
         }
+
 
         [HttpPut("EditBooking/{bookingId}")]
         public async Task<IActionResult> EditBooking(EditBookingDTO bookingDTO, int bookingId)
         {
-            await _bookingsService.EditBookingAsync(bookingDTO, bookingId);
-            return Ok();
+            var theBooking = await _bookingsService.GetBookingByIdAsync(bookingId);
+            if(theBooking == null)
+            {
+                return NotFound(new { Error = $"No bookings with id.{bookingId} found!" });
+            }
+            try
+            {
+                await _bookingsService.EditBookingAsync(bookingDTO, theBooking.Id);
+                return Ok();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(ex.Message);
+            }
+            catch(JsonException ex)
+            {
+                return Conflict(ex.Message);
+            }
         }
+
 
         [HttpDelete("DeleteBooking/{bookingId}")]
         public async Task<IActionResult> DeleteBooking(int bookingId)
         {
-            await _bookingsService.DeleteBookingAsync(bookingId);
-            return Ok();
+            var bookingToDelete = await _bookingsService.GetBookingByIdAsync(bookingId);
+            if (bookingToDelete == null)
+            {
+                return NotFound(new { Error = $"No bookings with id.{bookingId} found!" });
+            }
+            try
+            {
+                await _bookingsService.DeleteBookingAsync(bookingId);
+                return Ok();
+            }
+            catch(InvalidOperationException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
     }
 }

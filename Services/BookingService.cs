@@ -1,5 +1,5 @@
 ﻿using Labb1_ASP.NET_API.Models;
-using Labb1_ASP.NET_API.Models.DTOs;
+using Labb1_ASP.NET_API.Models.DTOs.Booking;
 using Labb1_ASP.NET_API.Repositories;
 using Labb1_ASP.NET_API.Repositories.IRepositories;
 using Labb1_ASP.NET_API.Services.IServices;
@@ -24,13 +24,14 @@ namespace Labb1_ASP.NET_API.Services
             if (allBookings == null) { return null; }
 
             return allBookings.Select(booking => new ShowBookingDTO
-                {
+            {
                 Id = booking.Id,
                 CustomerId = booking.FK_CustomerId,
                 CustomerName = $"{booking.Customer.FirstName} {booking.Customer.LastName}",
                 CustomerPhoneNumber = booking.Customer.PhoneNumber,
                 AmountGuest = booking.AmountGuest,
                 BookingDate = booking.BookingTime,
+                BookingDateEnd = booking.BookingTimeEnd,
                 TableId = booking.Table.Id,
                 TableNumber = booking.Table.TableNumber,
             }).ToList();
@@ -49,6 +50,7 @@ namespace Labb1_ASP.NET_API.Services
                 CustomerPhoneNumber = theBooking.Customer.PhoneNumber,
                 AmountGuest = theBooking.AmountGuest,
                 BookingDate = theBooking.BookingTime,
+                BookingDateEnd = theBooking.BookingTimeEnd,
                 TableId = theBooking.Table.Id,
                 TableNumber = theBooking.Table.TableNumber,
             };
@@ -58,25 +60,34 @@ namespace Labb1_ASP.NET_API.Services
         public async Task AddBookingAsync(CreateBookingDTO bookingDto)
         {
             //check availability of the table.
-            var table = await _tableRepository.GetTableByIdAsync(bookingDto.TableId);
-            if(table == null || table.TableSeats < bookingDto.AmountGuest) 
+            var theTable = await _tableRepository.GetTableByIdAsync(bookingDto.TableId);
+            if (theTable == null)
             {
-                throw new InvalidOperationException($"Table {bookingDto.TableId} cant fit {bookingDto.AmountGuest} guests.");
+                throw new InvalidOperationException($"Table {bookingDto.TableId} not found!");
             }
-
             var bookingEndTime = bookingDto.BookingTime.AddHours(2);
-            var isTableAvailable = await _bookingRepository.IsTableAvailableAsync(bookingDto.TableId, bookingDto.BookingTime, bookingEndTime);
+            var isTableAvailable = await _bookingRepository.IsTableBusyAsync(bookingDto.TableId, bookingDto.BookingTime, bookingEndTime);
 
             if (!isTableAvailable)
             {
                 throw new InvalidOperationException($"Table {bookingDto.TableId} is not available on {bookingDto.BookingTime}.");
             }
 
+            //error checks
+            if (bookingDto.AmountGuest == 0)
+            {
+                throw new InvalidOperationException($"Number of guests cannot be {bookingDto.AmountGuest}!");
+            }
+            if (bookingDto.BookingTime == DateTime.MinValue)
+            {
+                throw new InvalidOperationException($"Wrong date fromat entered! Enter: 'yyyy-MM-dd HH:mm'");
+            }
+
             //creates a new customer at the same time as addin booking
             var existingCustomer = await _customerRepository.GetCustomerByPhoneNumberAsync(bookingDto.PhoneNumber);
             Customer customer;
 
-            if (existingCustomer == null) 
+            if (existingCustomer == null)
             {
                 customer = new Customer
                 {
@@ -90,7 +101,7 @@ namespace Labb1_ASP.NET_API.Services
             {
                 customer = existingCustomer;
             }
-            
+
             var newBooking = new Booking
             {
                 FK_CustomerId = customer.Id,
@@ -104,26 +115,38 @@ namespace Labb1_ASP.NET_API.Services
 
         public async Task EditBookingAsync(EditBookingDTO bookingDto, int id)
         {
-           var bookingToEdit = await _bookingRepository.GetBookingByIdAsync(id);
+            var bookingToEdit = await _bookingRepository.GetBookingByIdAsync(id);
 
-            //Added these if-statements because in my DTO fileds can be null and it collides with my models.
-            if (bookingDto.CustomerId.HasValue)
+            //guest controlls
+            if (bookingDto.AmountGuest == 0)
             {
-                bookingToEdit.FK_CustomerId = bookingDto.CustomerId.Value;
+                throw new InvalidOperationException($"Number of guests cannot be {bookingDto.AmountGuest}!");
             }
-            if (bookingDto.AmountGuest.HasValue)
+            bookingToEdit.AmountGuest = bookingDto.AmountGuest;
+
+            //booking controlls
+            if(bookingDto.BookingTime == DateTime.MinValue || bookingDto.BookingTimeEnd == DateTime.MinValue)
             {
-                bookingToEdit.AmountGuest = bookingDto.AmountGuest.Value;
+                throw new InvalidOperationException($"Wrong date fromat entered! Enter: 'yyyy-MM-dd HH:mm'");
             }
-            if (bookingDto.BookingDate.HasValue)
+            var bookingEndTime = bookingDto.BookingTimeEnd.AddHours(2);
+            var IsTableBusy = await _bookingRepository.IsTableBusyAsync(bookingDto.TableId, bookingDto.BookingTimeEnd, bookingEndTime, id);
+            if (IsTableBusy) 
             {
-                bookingToEdit.BookingTime = bookingDto.BookingDate.Value;
+                throw new InvalidOperationException($"Table {bookingDto.TableId} is not available on {bookingDto.BookingTime}.");
             }
-            if(bookingDto.TableId.HasValue)
+            bookingToEdit.BookingTime = bookingDto.BookingTime;
+            bookingToEdit.BookingTimeEnd = bookingDto.BookingTimeEnd;
+
+            //table controlls
+            var theTable = await _tableRepository.GetTableByIdAsync(bookingDto.TableId);
+            if (theTable == null)
             {
-                bookingToEdit.FK_TableId = bookingDto.TableId.Value;
+                throw new InvalidOperationException($"Table {bookingDto.TableId} not found!");
             }
-            
+            bookingToEdit.FK_TableId = bookingDto.TableId;
+
+            //updating booking
             await _bookingRepository.EditBookingAsync(bookingToEdit);
         }
 

@@ -48,9 +48,9 @@ namespace Labb1_ASP.NET_API.Repositories
         public async Task EditCustomerAsync(Customer customer)
         {
             bool customerCheck = await _context.Customers.AnyAsync(x => x.PhoneNumber == customer.PhoneNumber);
-            if (customerCheck)
+            if (customerCheck && customer.Id != customer.Id)
             {
-                throw new InvalidOperationException($"Customr with phone number: {customer.PhoneNumber} already exist!");
+                throw new InvalidOperationException($"This number is already connected to a customer");
             }
             _context.Customers.Update(customer);
             await _context.SaveChangesAsync();

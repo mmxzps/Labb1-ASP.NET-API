@@ -1,5 +1,5 @@
 ﻿using Labb1_ASP.NET_API.Models;
-using Labb1_ASP.NET_API.Models.DTOs;
+using Labb1_ASP.NET_API.Models.DTOs.Table;
 using Labb1_ASP.NET_API.Repositories.IRepositories;
 using Labb1_ASP.NET_API.Services.IServices;
 
@@ -28,6 +28,10 @@ namespace Labb1_ASP.NET_API.Services
         public async Task<ShowTableDTO> GetTableByIdAsync(int id)
         {
             var existingTable = await _tableRepository.GetTableByIdAsync(id);
+            if(existingTable == null)
+            {
+                throw new KeyNotFoundException($"Table with Id.{id} was not found!");
+            }
             return new ShowTableDTO
             {
                 Id = existingTable.Id,
@@ -46,10 +50,22 @@ namespace Labb1_ASP.NET_API.Services
             await _tableRepository.AddTableAsync(addTable);
         }
 
-
         public async Task EditTableAsync(EditTableDTO tableDto, int tableId)
         {
             var existingTable = await _tableRepository.GetTableByIdAsync(tableId);
+            var existingTables = await _tableRepository.GetAllTableAsync();
+            bool tablenr = true;
+            foreach (var table in existingTables)
+            {
+                if( table.TableNumber == existingTable.TableNumber)
+                {
+                    tablenr = false;
+                }
+            }
+            if(tablenr == false)
+            {
+                throw new InvalidOperationException($"Table with number {tableDto.TableNumber} already exist!");
+            }
 
             existingTable.TableNumber = tableDto.TableNumber;
             existingTable.TableSeats = tableDto.TableSeats;
@@ -59,7 +75,12 @@ namespace Labb1_ASP.NET_API.Services
 
         public async Task DeleteTableAsync(int id)
         {
-            await _tableRepository.DeleteTableAsync(id);
+            var existingTable = await _tableRepository.GetTableByIdAsync(id);
+            if (existingTable == null)
+            {
+                throw new KeyNotFoundException($"Table with Id.{id} was not found!");
+            }
+            await _tableRepository.DeleteTableAsync(existingTable.Id);
         }
     }
 }

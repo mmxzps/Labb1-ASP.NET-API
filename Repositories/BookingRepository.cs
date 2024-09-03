@@ -44,12 +44,20 @@ namespace Labb1_ASP.NET_API.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> IsTableAvailableAsync(int tableId, DateTime bookingTime, DateTime bookingTimeEnd)
+        public async Task<bool> IsTableBusyAsync(int tableId, DateTime startTime, DateTime endTime)
         {
-            return !await _context.Bookings
-                .AnyAsync(b => b.FK_TableId == tableId &&
-                               b.BookingTime < bookingTimeEnd &&  
-                               b.BookingTimeEnd > bookingTime);
+            return await IsTableBusyAsync(tableId, startTime, endTime, null);
         }
+
+        //overload for editbooking. 
+        public async Task<bool> IsTableBusyAsync(int newTableId, DateTime newBookingTime, DateTime newBookingTimeEnd, int? bookingIdToIgnore)
+        {
+            return await _context.Bookings
+                .AnyAsync(b => b.FK_TableId == newTableId &&
+                               b.Id != bookingIdToIgnore &&
+                               b.BookingTime < newBookingTimeEnd && 
+                               b.BookingTimeEnd > newBookingTime); 
+        }
+
     }
 }

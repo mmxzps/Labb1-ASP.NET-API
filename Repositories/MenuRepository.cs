@@ -23,6 +23,7 @@ namespace Labb1_ASP.NET_API.Repositories
         {
             return await _context.Menu.FindAsync(id);
         }
+
         public async Task AddMenuAsync(Menu menu)
         {
             await _context.Menu.AddAsync(menu);
@@ -34,6 +35,7 @@ namespace Labb1_ASP.NET_API.Repositories
             _context.Menu.Update(menu);
             await _context.SaveChangesAsync();
         }
+
         public async Task DeleteMenuAsync(int id)
         {
             var deleteMenu = await _context.Menu.FindAsync(id);

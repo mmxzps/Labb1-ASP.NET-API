@@ -13,6 +13,8 @@ namespace Labb1_ASP.NET_API.Repositories
         {
             _context = context;
         }
+
+
         public async Task<IEnumerable<Table>> GetAllTableAsync()
         {
             var tableList = await _context.Tables.ToListAsync();
@@ -23,6 +25,7 @@ namespace Labb1_ASP.NET_API.Repositories
         {
             return await _context.Tables.FindAsync(id);
         }
+
         public async Task AddTableAsync(Table table)
         {
             await _context.Tables.AddAsync(table);
@@ -34,12 +37,12 @@ namespace Labb1_ASP.NET_API.Repositories
              _context.Tables.Update(table);
             await _context.SaveChangesAsync();
         }
+
         public async Task DeleteTableAsync(int id)
         {
             var existingTable = await _context.Tables.FindAsync(id);
             _context.Tables.Remove(existingTable);
             await _context.SaveChangesAsync();
         }
-
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Labb1_ASP.NET_API.Models.DTOs
+namespace Labb1_ASP.NET_API.Models.DTOs.Customer
 {
     public class CustomerWithIdDTO
     {

@@ -6,7 +6,7 @@ using System.Globalization;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Labb1_ASP.NET_API.Models.DTOs
+namespace Labb1_ASP.NET_API.Models.DTOs.Booking
 {
     public class ShowBookingDTO
     {
@@ -17,11 +17,14 @@ namespace Labb1_ASP.NET_API.Models.DTOs
         public int AmountGuest { get; set; }
         [JsonConverter(typeof(CustomDate))]
         public DateTime BookingDate { get; set; }
+
+        [JsonConverter(typeof(CustomDate))]
+        public DateTime BookingDateEnd { get; set; }
         public int TableId { get; set; }
         public int TableNumber { get; set; }
     }
 
-    //Changes the format of the Date showing. so it'll skip the seconds and miliseconds.
+    //Changes the format of the Date showing. 
     public class CustomDate : JsonConverter<DateTime>
     {
         private const string _format = "yyyy-MM-dd HH:mm";
@@ -33,7 +36,21 @@ namespace Labb1_ASP.NET_API.Models.DTOs
 
         public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            return DateTime.ParseExact(reader.GetString(), _format, CultureInfo.InvariantCulture);
+            //extra check if date is null or written in wrong format.
+            string dateString = reader.GetString();
+            if (string.IsNullOrEmpty(dateString)) 
+            {
+                return DateTime.MinValue;
+            }
+
+            try
+            {
+                return DateTime.ParseExact(dateString, _format, CultureInfo.InvariantCulture);
+            }
+            catch (FormatException)
+            {
+                return DateTime.MinValue;
+            }
         }
     }
     //Changeing format of datetime in swagger
