@@ -126,10 +126,12 @@ none
 ````
 Responses:<br>
 - 204 : *Success*<br>
-- 409 : *Error = "Table 2 cant fit 6 guests."*
 - 409 : *Error = "Table 1 is not available on 2024-09-01 20:00"*
 - 400 : *Error = "Phone number must be 10 digits long."*   
 - 400 : *Error = "Enter only digits."*
+- 409 : *Error = "Table 99 not found!"*
+- 409 : *Error = "Number of guests cannot be 0!"*
+- 409 : *Error = "Wrong date fromat entered! Enter: 'yyyy-MM-dd HH:mm'"*
 
 </td></tr></table>
 
@@ -148,7 +150,6 @@ Request Body:
 ```json
 [
   {
-    "customerId": 5,
     "amountGuest": 4,
     "bookingDate": "2024-09-01 22:00",
     "tableId": 1
@@ -161,11 +162,12 @@ none
 ````
 Responses:<br>
 - 200 : *Success*<br>
-- 409 : *Error = "Table 2 cant fit 6 guests."*
+- 404 Bad Request: Error = "No bookings with id.99 found!"
 - 409 : *Error = "Table 1 is not available on 2024-09-01 20:00"*
 - 400 : *Error = "Phone number must be 10 digits long."*   
-- 400 : *Error = "No table with id.1 found!"*
-- 400 : *Error = "No customer with id.2 found!"*
+- 409 : *Error = "Table 99 not found!"*
+- 409 : *Error = "Number of guests cannot be 0!"* 
+- 409 : *Error = "Wrong date fromat entered! Enter: 'yyyy-MM-dd HH:mm'"*
 
 </td></tr></table>
 
@@ -266,7 +268,7 @@ Output Body:
 ````
 Responses:<br>
 - 200 : *Success*<br> 
-- 400 : *Error = "No customer found!"*
+- 400 : *"Customer with Id.99 was not found!"*
 
 </td></tr></table>
 
@@ -296,7 +298,7 @@ Output Body:
 ````
 Responses:<br>
 - 200 : *Success*<br> 
-- 400 : *Error = "No customers found!"*
+- 400 : *Error = "Customer with phone number:9999999 was not found!"*
 
 </td></tr></table>
 
@@ -325,8 +327,9 @@ Output Body:
 ````
 Responses:<br>
 - 200 : *Success*<br> 
-- 400 : *Error = "Name field is required and must be a string with a minimum length of 2 and a maximum length of 30."*
-- 400 : *Error = "PhoneNumber field is required and must be 10 digits long."*
+- 400 : *Error = "Name length must be min 2 and max 30."*
+- 400 : *Error = "PhoneNumber is required and must be 10 digits long."*
+- 409 : *Error = "Customr with phone number: 99999999 already exist!"*
 
 </td></tr></table>
 
@@ -355,9 +358,9 @@ Output Body:
 ````
 Responses:<br>
 - 200 : *Success*<br> 
-- 400 : *Error = "Name field is required and must be a string with a minimum length of 2 and a maximum length of 30."*
-- 400 : *Error = "PhoneNumber field is required and must be 10 digits long."*
-- 400 : *Error = "Given customerId doesnt exist."*
+- 400 : *Error = "Name length must be min 2 and max 30."*
+- 400 : *Error = "PhoneNumber is required and must be 10 digits long."*
+- 409 : *Error = "Customer with Id.99 was not found!"*
 - 400 : *Error = "This number is already connected to a customer"*
 
 </td></tr></table>
@@ -383,7 +386,7 @@ Output Body:
 ````
 Responses:<br>
 - 200 : *Success*<br> 
-- 400 : *Error = "Given customerId doesnt exist."*
+- 409 : *Error = "Customer with Id.99 was not found!"*
 
 </td></tr></table>
 
@@ -429,7 +432,7 @@ Output Body:
 ````
 Responses:<br>
 - 200 : *Success*<br> 
-- 400 : *Error = "No items found!"*
+- 400 : *Error = "No menu items found!"*
 
 </td></tr></table>
 
@@ -442,7 +445,7 @@ Responses:<br>
 </div>
 
 * Method:   GET
-* URL: ```/api/Menu/GetAllMenuItemById/1```<br><br>
+* URL: ```/api/Menu/GetMenuItemById/1```<br><br>
 
 Request Body:
 ```json
@@ -458,7 +461,8 @@ Output Body:
   }
 ````
 Responses:<br>
-- 200 : *Success*<br> 
+- 200 : *Success*<br>
+- 409 : *Error = "Menu item with Id.99 was not found!"*
 
 </td></tr></table>
 
@@ -487,6 +491,8 @@ none
 ````
 Responses:<br>
 - 200 : *Success*<br> 
+- 400 : *Error = "The FoodName field is required."*
+- 400 : *Error = "Price cant be empty and must be larger than 0!"*
 
 </td></tr></table>
 
@@ -515,6 +521,9 @@ none
 ````
 Responses:<br>
 - 200 : *Success*<br> 
+- 409 : *Error = "Menu item with Id.99 was not found!"*
+- 400 : *Error = "Foodname cant be empty!"*
+- 400 : *Error = "Price cant be empty and must be larger than 0!"*
 
 </td></tr></table>
 
@@ -539,6 +548,7 @@ none
 ````
 Responses:<br>
 - 200 : *Success*<br> 
+- 409 : *Error = "Menu item with Id.99 was not found!"*
 
 </td></tr></table>
 
@@ -611,7 +621,7 @@ Output Body:
 ````
 Responses:<br>
 - 200 : *Success*<br> 
-- 400 : *Error = "No items found!"*
+- 400 : *Error = "Table with Id.99 was not found!"*
 
 </td></tr></table>
 
@@ -639,7 +649,7 @@ none
 ````
 Responses:<br>
 - 200 : *Success*<br> 
-- 400 : *Error = "No items found!"*
+- 400 : *Error = "The tableDto field is required."*
 
 </td></tr></table>
 
@@ -667,7 +677,9 @@ none
 ````
 Responses:<br>
 - 200 : *Success*<br> 
-- 400 : *Error = "No items found!"*
+- 400 : *Error = "The tableDTO field is required."*
+- 400 : *Error = "Table with Id.99 was not found!"*
+- 409 : *Error = "Table with number 99 already exist!"*
 
 </td></tr></table>
 
@@ -692,7 +704,7 @@ none
 ````
 Responses:<br>
 - 200 : *Success*<br> 
-- 400 : *Error = "No items found!"*
+- 400 : *Error = "Table with Id.99 was not found!"*
 
 </td></tr></table>
 
