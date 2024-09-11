@@ -73,6 +73,10 @@ namespace Labb1_ASP.NET_API.Controllers
             {
                 return BadRequest($"{ex.Message}");
             }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(ex.Message);
+            }
         }
 
 

@@ -12,6 +12,7 @@ namespace Labb1_ASP.NET_API.Models
         public string FoodName { get; set; }
         public string Description { get; set; }
         public FoodType FoodTypee { get; set; }
+
         [Required]
         public double Price { get; set; }
 

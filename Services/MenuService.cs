@@ -21,6 +21,7 @@ namespace Labb1_ASP.NET_API.Services
             return allMenus.Select(x => new ShowMenuDTO
             {
                 Id = x.Id,
+                FoodTypee = x.FoodTypee,
                 FoodName = x.FoodName,
                 Description = x.Description,
                 Price = x.Price,
@@ -40,6 +41,7 @@ namespace Labb1_ASP.NET_API.Services
             return new ShowMenuDTO
             {
                 Id = existingMenu.Id,
+                FoodTypee = existingMenu.FoodTypee,
                 FoodName = existingMenu.FoodName,
                 Price = existingMenu.Price,
                 Description = existingMenu.Description,
@@ -55,8 +57,13 @@ namespace Labb1_ASP.NET_API.Services
             {
                 throw new InvalidOperationException($"Price cant be empty and must be larger than 0!");
             }
+            if (!Enum.IsDefined(typeof(FoodType), menuDto.FoodTypee))
+            {
+                throw new InvalidDataException("Invalid FoodType value. Please choose between 0-3");
+            }
             await _menuRepository.AddMenuAsync(new Menu
             {
+                FoodTypee = menuDto.FoodTypee,
                 FoodName = menuDto.FoodName,
                 Description = menuDto.Description,
                 Price = menuDto.Price,
@@ -72,8 +79,18 @@ namespace Labb1_ASP.NET_API.Services
             {
                 throw new KeyNotFoundException($"Menu item with Id.{id} was not found!");
             }
-            
-            if(string.IsNullOrEmpty(menuDto.FoodName))
+
+            if (menuDto.FoodTypee == null )
+            {
+                throw new InvalidDataException($"FoodType cant be empty!");
+            }
+            if (!Enum.IsDefined(typeof(FoodType), menuDto.FoodTypee))
+            {
+                throw new InvalidDataException("Invalid FoodType value. Please choose between 0-3");
+            }
+            existingMenu.FoodTypee = menuDto.FoodTypee;
+
+            if (string.IsNullOrEmpty(menuDto.FoodName))
             {
                 throw new InvalidDataException($"Foodname cant be empty!");
             }
