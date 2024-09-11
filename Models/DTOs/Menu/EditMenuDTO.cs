@@ -6,6 +6,13 @@
 
         public double Price { get; set; }
 
+        public string Description { get; set; }
+
         public bool IsAvailable { get; set; }
+
+        public bool IsPopular { get; set; }
+
+        public string? ImgUrl { get; set; }
+
     }
 }

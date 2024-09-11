@@ -22,8 +22,11 @@ namespace Labb1_ASP.NET_API.Services
             {
                 Id = x.Id,
                 FoodName = x.FoodName,
+                Description = x.Description,
                 Price = x.Price,
                 IsAvailable = x.IsAvailable,
+                IsPopular = x.IsPopular,
+                ImgUrl = x.ImgUrl,
             });
         }
 
@@ -39,7 +42,10 @@ namespace Labb1_ASP.NET_API.Services
                 Id = existingMenu.Id,
                 FoodName = existingMenu.FoodName,
                 Price = existingMenu.Price,
+                Description = existingMenu.Description,
                 IsAvailable = existingMenu.IsAvailable,
+                IsPopular= existingMenu.IsPopular,
+                ImgUrl = existingMenu.ImgUrl,
             };
         }
 
@@ -52,8 +58,10 @@ namespace Labb1_ASP.NET_API.Services
             await _menuRepository.AddMenuAsync(new Menu
             {
                 FoodName = menuDto.FoodName,
+                Description = menuDto.Description,
                 Price = menuDto.Price,
-                IsAvailable = menuDto.IsAvailable
+                IsAvailable = menuDto.IsAvailable,
+                ImgUrl= menuDto.ImgUrl,
             });
         }
 
@@ -71,11 +79,21 @@ namespace Labb1_ASP.NET_API.Services
             }
             existingMenu.FoodName = menuDto.FoodName;
 
+
+            if (string.IsNullOrEmpty(menuDto.Description))
+            {
+                throw new InvalidDataException($"Description cant be empty!");
+            }
+            existingMenu.Description = menuDto.Description;
+
+
             if(menuDto.Price <= 0 || menuDto.Price == null)
             {
                 throw new InvalidDataException($"Price cant be empty and must be larger than 0!");
             }
             existingMenu.Price = menuDto.Price;
+
+            existingMenu.ImgUrl = menuDto.ImgUrl;
 
             existingMenu.IsAvailable = menuDto.IsAvailable;
 
