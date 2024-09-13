@@ -53,10 +53,10 @@ namespace Labb1_ASP.NET_API.Repositories
         public async Task<bool> IsTableBusyAsync(int newTableId, DateTime newBookingTime, DateTime newBookingTimeEnd, int? bookingIdToIgnore)
         {
             return await _context.Bookings
-                .AnyAsync(b => b.FK_TableId == newTableId &&
-                               b.Id != bookingIdToIgnore &&
-                               b.BookingTime < newBookingTimeEnd && 
-                               b.BookingTimeEnd > newBookingTime); 
+                .AnyAsync(b => b.FK_TableId == newTableId && //true
+                               b.Id != bookingIdToIgnore && //false
+                               b.BookingTime < newBookingTimeEnd && //false 
+                               b.BookingTimeEnd > newBookingTime); //false
         }
 
     }

@@ -24,17 +24,17 @@ namespace Labb1_ASP.NET_API
                 options.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationContext"));
             });
 
-            //Changeing format of datetime in swagger
-            builder.Services.AddSwaggerGen(c =>
-            {
-                c.SchemaFilter<DateTimeSchemaFilter>();
-            });
-            //Changeing format of datetime in swagger
-            builder.Services.AddControllers()
-            .AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.Converters.Add(new CustomDate());
-            });
+            ////Changeing format of datetime in swagger
+            //builder.Services.AddSwaggerGen(c =>
+            //{
+            //    c.SchemaFilter<DateTimeSchemaFilter>();
+            //});
+            ////Changeing format of datetime in swagger
+            //builder.Services.AddControllers()
+            //.AddJsonOptions(options =>
+            //{
+            //    options.JsonSerializerOptions.Converters.Add(new CustomDate());
+            //});
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

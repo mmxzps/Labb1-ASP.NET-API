@@ -114,6 +114,8 @@ namespace Labb1_ASP.NET_API.Services
 
             existingMenu.IsAvailable = menuDto.IsAvailable;
 
+            existingMenu.IsPopular = menuDto.IsPopular;
+
             await _menuRepository.EditMenuAsync(existingMenu);
         }
 

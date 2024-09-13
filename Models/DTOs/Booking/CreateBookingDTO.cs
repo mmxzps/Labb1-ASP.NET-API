@@ -24,7 +24,6 @@ namespace Labb1_ASP.NET_API.Models.DTOs.Booking
 
 
         [Required]
-        [JsonConverter(typeof(CustomDate))]
         public DateTime BookingTime { get; set; }
 
 

@@ -76,10 +76,6 @@ namespace Labb1_ASP.NET_API.Controllers
             {
                 return Conflict(ex.Message);
             }
-            catch(JsonException ex)
-            {
-                return Conflict(ex.Message);
-            }
         }
 
 

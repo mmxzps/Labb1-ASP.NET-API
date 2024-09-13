@@ -30,8 +30,8 @@ namespace Labb1_ASP.NET_API.Services
                 CustomerName = $"{booking.Customer.FirstName} {booking.Customer.LastName}",
                 CustomerPhoneNumber = booking.Customer.PhoneNumber,
                 AmountGuest = booking.AmountGuest,
-                BookingDate = booking.BookingTime,
-                BookingDateEnd = booking.BookingTimeEnd,
+                BookingTime = booking.BookingTime,
+                BookingTimeEnd = booking.BookingTimeEnd,
                 TableId = booking.Table.Id,
                 TableNumber = booking.Table.TableNumber,
             }).ToList();
@@ -49,8 +49,8 @@ namespace Labb1_ASP.NET_API.Services
                 CustomerName = $"{theBooking.Customer.FirstName} {theBooking.Customer.LastName}",
                 CustomerPhoneNumber = theBooking.Customer.PhoneNumber,
                 AmountGuest = theBooking.AmountGuest,
-                BookingDate = theBooking.BookingTime,
-                BookingDateEnd = theBooking.BookingTimeEnd,
+                BookingTime = theBooking.BookingTime,
+                BookingTimeEnd = theBooking.BookingTimeEnd,
                 TableId = theBooking.Table.Id,
                 TableNumber = theBooking.Table.TableNumber,
             };
@@ -66,9 +66,9 @@ namespace Labb1_ASP.NET_API.Services
                 throw new InvalidOperationException($"Table {bookingDto.TableId} not found!");
             }
             var bookingEndTime = bookingDto.BookingTime.AddHours(2);
-            var isTableAvailable = await _bookingRepository.IsTableBusyAsync(bookingDto.TableId, bookingDto.BookingTime, bookingEndTime);
+            var isTableBusy = await _bookingRepository.IsTableBusyAsync(bookingDto.TableId, bookingDto.BookingTime, bookingEndTime);
 
-            if (!isTableAvailable)
+            if (isTableBusy)
             {
                 throw new InvalidOperationException($"Table {bookingDto.TableId} is not available on {bookingDto.BookingTime}.");
             }
@@ -129,8 +129,9 @@ namespace Labb1_ASP.NET_API.Services
             {
                 throw new InvalidOperationException($"Wrong date fromat entered! Enter: 'yyyy-MM-dd HH:mm'");
             }
-            var bookingEndTime = bookingDto.BookingTimeEnd.AddHours(2);
-            var IsTableBusy = await _bookingRepository.IsTableBusyAsync(bookingDto.TableId, bookingDto.BookingTimeEnd, bookingEndTime, id);
+           // var bookingEndTime = bookingDto.BookingTime.AddHours(2);
+
+            var IsTableBusy = await _bookingRepository.IsTableBusyAsync(bookingDto.TableId, bookingDto.BookingTime, bookingDto.BookingTimeEnd, id);
             if (IsTableBusy) 
             {
                 throw new InvalidOperationException($"Table {bookingDto.TableId} is not available on {bookingDto.BookingTime}.");
