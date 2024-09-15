@@ -28,7 +28,7 @@ namespace Labb1_ASP.NET_API.Services
         public async Task<ShowTableDTO> GetTableByIdAsync(int id)
         {
             var existingTable = await _tableRepository.GetTableByIdAsync(id);
-            if(existingTable == null)
+            if (existingTable == null)
             {
                 throw new KeyNotFoundException($"Table with Id.{id} was not found!");
             }
@@ -52,25 +52,21 @@ namespace Labb1_ASP.NET_API.Services
 
         public async Task EditTableAsync(EditTableDTO tableDto, int tableId)
         {
-            var existingTable = await _tableRepository.GetTableByIdAsync(tableId);
-            var existingTables = await _tableRepository.GetAllTableAsync();
-            bool tablenr = true;
-            foreach (var table in existingTables)
+            var tableToUpdate = await _tableRepository.GetTableByIdAsync(tableId);
+            var allExistingTables = await _tableRepository.GetAllTableAsync();
+
+            if (allExistingTables.Any(t => t.TableNumber == tableToUpdate.TableNumber && t.Id == tableId))
             {
-                if( table.TableNumber == existingTable.TableNumber)
-                {
-                    tablenr = false;
-                }
+                tableToUpdate.TableNumber = tableDto.TableNumber;
+                tableToUpdate.TableSeats = tableDto.TableSeats;
+
+                await _tableRepository.EditTableAsync(tableToUpdate);
+
             }
-            if(tablenr == false)
+            if (allExistingTables.Any(t => t.TableNumber == tableToUpdate.TableNumber && t.Id != tableId))
             {
                 throw new InvalidOperationException($"Table with number {tableDto.TableNumber} already exist!");
             }
-
-            existingTable.TableNumber = tableDto.TableNumber;
-            existingTable.TableSeats = tableDto.TableSeats;
-
-            await _tableRepository.EditTableAsync(existingTable);
         }
 
         public async Task DeleteTableAsync(int id)
