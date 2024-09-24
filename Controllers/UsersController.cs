@@ -47,7 +47,7 @@ namespace Labb1_ASP.NET_API.Controllers
 
             }catch (InvalidOperationException ex)
             {
-                return BadRequest(ex.Message);
+                return Unauthorized(ex.Message);
             }
         }
     }
