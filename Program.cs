@@ -5,8 +5,11 @@ using Labb1_ASP.NET_API.Repositories;
 using Labb1_ASP.NET_API.Repositories.IRepositories;
 using Labb1_ASP.NET_API.Services;
 using Labb1_ASP.NET_API.Services.IServices;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.ComponentModel;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace Labb1_ASP.NET_API
@@ -24,19 +27,30 @@ namespace Labb1_ASP.NET_API
                 options.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationContext"));
             });
 
-            ////Changeing format of datetime in swagger
-            //builder.Services.AddSwaggerGen(c =>
-            //{
-            //    c.SchemaFilter<DateTimeSchemaFilter>();
-            //});
-            ////Changeing format of datetime in swagger
-            //builder.Services.AddControllers()
-            //.AddJsonOptions(options =>
-            //{
-            //    options.JsonSerializerOptions.Converters.Add(new CustomDate());
-            //});
-
             builder.Services.AddControllers();
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options=> options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+                });
+            builder.Services.AddAuthorization();
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("MinLocalReact", policy =>
+                {
+                    policy.WithOrigins("Http://localhost:5173")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+                });
+            });
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -50,6 +64,9 @@ namespace Labb1_ASP.NET_API
             builder.Services.AddScoped<ITableService, TableService>();
 
             var app = builder.Build();
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseCors("MinLocalReact");
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

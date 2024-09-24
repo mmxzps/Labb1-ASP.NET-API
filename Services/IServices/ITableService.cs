@@ -10,5 +10,6 @@ namespace Labb1_ASP.NET_API.Services.IServices
         Task AddTableAsync(EditTableDTO table);
         Task EditTableAsync(EditTableDTO table, int tableId);
         Task DeleteTableAsync(int id);
+        Task<List<ShowTableDTO>> GetAllFreeTables(DateTime startTime, int amountFuests);
     }
 }

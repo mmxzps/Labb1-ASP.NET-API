@@ -42,6 +42,19 @@ namespace Labb1_ASP.NET_API.Controllers
             }
         }
 
+        [HttpGet("ShowFreeTables")]
+        public async Task<IActionResult> ShowFreeTables([FromQuery] DateTime startTime, int amountGuests)
+        {
+            try
+            {
+                var freeTables = await _tableService.GetAllFreeTables(startTime, amountGuests);
+                return Ok(freeTables);
+            }
+            catch (Exception ex) 
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
         [HttpPost("AddTable")]
         public async Task<IActionResult> AddTable(EditTableDTO tableDto)

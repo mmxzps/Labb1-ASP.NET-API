@@ -8,9 +8,11 @@ namespace Labb1_ASP.NET_API.Services
     public class TableService : ITableService
     {
         private readonly ITableRepository _tableRepository;
-        public TableService(ITableRepository tableRepository)
+        private readonly IBookingRepository _bookingRepository;
+        public TableService(ITableRepository tableRepository, IBookingRepository bookingRepository)
         {
             _tableRepository = tableRepository;
+            _bookingRepository = bookingRepository;
         }
 
         public async Task<IEnumerable<ShowTableDTO>> GetAllTableAsync()
@@ -38,6 +40,31 @@ namespace Labb1_ASP.NET_API.Services
                 TableNumber = existingTable.TableNumber,
                 TableSeats = existingTable.TableSeats
             };
+        }
+
+        public async Task<List<ShowTableDTO>> GetAllFreeTables(DateTime startTime, int amountFuests)
+        {
+            var allTables = await _tableRepository.GetAllTableAsync();
+            List<ShowTableDTO> freeTables = new List<ShowTableDTO>();
+            var endTime = startTime.AddHours(2);
+
+            foreach (var table in allTables)
+            {
+                if(table.TableSeats == amountFuests)
+                {
+                    var isBusy = await _bookingRepository.IsTableBusyAsync(table.Id, startTime, endTime);
+                    if (!isBusy)
+                    {
+                        freeTables.Add(new ShowTableDTO
+                        {
+                            Id=table.Id,
+                            TableNumber = table.TableNumber,
+                            TableSeats = table.TableSeats,
+                        });
+                    }
+                }
+            }
+            return freeTables;
         }
 
         public async Task AddTableAsync(EditTableDTO tableDto)

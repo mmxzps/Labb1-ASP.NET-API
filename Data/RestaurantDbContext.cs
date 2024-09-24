@@ -11,6 +11,7 @@ namespace Labb1_ASP.NET_API.Data
         public DbSet<Table> Tables { get; set; }
         public DbSet<Menu> Menu { get; set; }
         public DbSet<Booking> Bookings { get; set; }
+        public DbSet<User> Users { get; set; }
 
     }
 }
