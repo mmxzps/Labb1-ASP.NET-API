@@ -62,6 +62,8 @@ namespace Labb1_ASP.NET_API
             builder.Services.AddScoped<IMenuService, MenuService>();
             builder.Services.AddScoped<ITableRepository, TableRepository>();
             builder.Services.AddScoped<ITableService, TableService>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IUserService, UserService>();
 
             var app = builder.Build();
             app.UseAuthentication();
