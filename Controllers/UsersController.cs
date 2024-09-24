@@ -33,9 +33,22 @@ namespace Labb1_ASP.NET_API.Controllers
         }
 
         [HttpPost("Login")]
-        public IActionResult Login()
+        public async Task<IActionResult> Login(LoginUserDTO loginUserDTO)
         {
-            return Ok();
+            try
+            {
+                var token = await _userService.LoginUserAsync(loginUserDTO);
+                return Ok(new { token } );
+
+            }catch (KeyNotFoundException ex)
+            {
+
+                return NotFound(ex.Message);
+
+            }catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
