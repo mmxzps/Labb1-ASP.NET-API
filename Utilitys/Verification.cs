@@ -10,9 +10,9 @@ namespace Labb1_ASP.NET_API.Utilitys
     public static class Verification
     {
         
-        public static bool CheckEmailAndPassword(User user, string EnteredPass, string storedPass)
+        public static bool CheckEmailAndPassword(User user, string EnteredPass, string storedPassHash)
         {
-            return user != null || BCrypt.Net.BCrypt.Verify(storedPass, EnteredPass);
+            return user == null || !BCrypt.Net.BCrypt.Verify(EnteredPass, storedPassHash);
         }
 
         public static string GenerateJwtToken(User user, IConfiguration configuration)

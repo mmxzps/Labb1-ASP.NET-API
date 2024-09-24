@@ -50,7 +50,7 @@ namespace Labb1_ASP.NET_API.Services
             }
 
             //controll if email or pass is correct
-            if (!Verification.CheckEmailAndPassword(findUser, userDTO.Password, findUser.PasswordHash))
+            if (Verification.CheckEmailAndPassword(findUser, userDTO.Password, findUser.PasswordHash))
             {
                 throw new InvalidOperationException("Invalid email or password!");
             };
